@@ -1,0 +1,30 @@
+{
+  "name": "lucitra-webhook-server",
+  "version": "1.0.0",
+  "description": "Webhook server for Lucitra AI HubSpot integration",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "build": "echo 'No build step required for Node.js'",
+    "deploy": "gcloud run deploy lucitra-webhook-server --source . --region us-central1"
+  },
+  "keywords": ["webhook", "hubspot", "cloud-run"],
+  "author": "Lucitra AI",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "winston": "^3.11.0",
+    "@google-cloud/logging-winston": "^6.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
