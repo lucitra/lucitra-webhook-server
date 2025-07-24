@@ -2,7 +2,7 @@ variable "cloud_provider" {
   description = "Cloud provider to deploy to (gcp or aws)"
   type        = string
   default     = "gcp"
-  
+
   validation {
     condition     = contains(["gcp", "aws"], var.cloud_provider)
     error_message = "Cloud provider must be either 'gcp' or 'aws'"
@@ -12,7 +12,7 @@ variable "cloud_provider" {
 variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
-  
+
   validation {
     condition     = contains(["dev", "staging", "prod"], var.environment)
     error_message = "Environment must be dev, staging, or prod"

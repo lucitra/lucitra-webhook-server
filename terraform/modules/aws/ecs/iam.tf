@@ -1,6 +1,6 @@
 resource "aws_iam_role" "ecs_execution_role" {
   name = "${var.service_name}-ecs-execution-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -13,7 +13,7 @@ resource "aws_iam_role" "ecs_execution_role" {
       }
     ]
   })
-  
+
   tags = var.tags
 }
 
@@ -24,7 +24,7 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy" {
 
 resource "aws_iam_role" "ecs_task_role" {
   name = "${var.service_name}-ecs-task-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -37,14 +37,14 @@ resource "aws_iam_role" "ecs_task_role" {
       }
     ]
   })
-  
+
   tags = var.tags
 }
 
 resource "aws_iam_policy" "ecs_task_policy" {
   name        = "${var.service_name}-ecs-task-policy"
   description = "Policy for ECS task"
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [

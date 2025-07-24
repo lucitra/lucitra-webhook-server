@@ -2,7 +2,7 @@ output "service_url" {
   description = "The URL of the deployed webhook service"
   value = var.cloud_provider == "gcp" ? (
     length(module.gcp_deployment) > 0 ? module.gcp_deployment[0].service_url : ""
-  ) : (
+    ) : (
     length(module.aws_deployment) > 0 ? module.aws_deployment[0].service_url : ""
   )
 }
@@ -11,7 +11,7 @@ output "webhook_endpoint" {
   description = "The webhook endpoint URL"
   value = var.cloud_provider == "gcp" ? (
     length(module.gcp_deployment) > 0 ? "${module.gcp_deployment[0].service_url}/webhook" : ""
-  ) : (
+    ) : (
     length(module.aws_deployment) > 0 ? "${module.aws_deployment[0].service_url}/webhook" : ""
   )
 }

@@ -1,6 +1,6 @@
 terraform {
   required_version = ">= 1.5.0"
-  
+
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -15,7 +15,7 @@ terraform {
       version = "~> 5.0"
     }
   }
-  
+
   backend "gcs" {
     bucket = "lucitra-terraform-state"
     prefix = "webhook-server"
@@ -35,7 +35,7 @@ provider "google-beta" {
 
 provider "aws" {
   region = var.aws_region
-  
+
   default_tags {
     tags = {
       Project     = "lucitra-webhook-server"
@@ -58,31 +58,31 @@ locals {
 module "gcp_deployment" {
   count  = var.cloud_provider == "gcp" ? 1 : 0
   source = "./modules/gcp/cloud-run"
-  
-  project_id          = var.gcp_project_id
-  region              = var.gcp_region
-  service_name        = var.service_name
-  image_tag           = var.image_tag
-  environment         = var.environment
-  env_vars            = var.env_vars
-  max_instances       = var.max_instances
-  min_instances       = var.min_instances
-  memory              = var.memory
-  cpu                 = var.cpu
-  labels              = local.common_labels
+
+  project_id    = var.gcp_project_id
+  region        = var.gcp_region
+  service_name  = var.service_name
+  image_tag     = var.image_tag
+  environment   = var.environment
+  env_vars      = var.env_vars
+  max_instances = var.max_instances
+  min_instances = var.min_instances
+  memory        = var.memory
+  cpu           = var.cpu
+  labels        = local.common_labels
 }
 
 module "aws_deployment" {
   count  = var.cloud_provider == "aws" ? 1 : 0
   source = "./modules/aws/ecs"
-  
-  region              = var.aws_region
-  service_name        = var.service_name
-  image_tag           = var.image_tag
-  environment         = var.environment
-  env_vars            = var.env_vars
-  desired_count       = var.min_instances
-  memory              = var.memory
-  cpu                 = var.cpu
-  tags                = local.common_labels
+
+  region        = var.aws_region
+  service_name  = var.service_name
+  image_tag     = var.image_tag
+  environment   = var.environment
+  env_vars      = var.env_vars
+  desired_count = var.min_instances
+  memory        = var.memory
+  cpu           = var.cpu
+  tags          = local.common_labels
 }
