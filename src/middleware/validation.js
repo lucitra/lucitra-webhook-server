@@ -20,11 +20,12 @@ const validateWebhook = (req, res, next) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    // Get webhook secret from environment
-    const secret = process.env.HUBSPOT_WEBHOOK_SECRET;
+    // For public apps, HubSpot uses the app's client secret for signing
+    // Get the client secret from environment
+    const secret = process.env.HUBSPOT_CLIENT_SECRET || process.env.HUBSPOT_WEBHOOK_SECRET;
     
     if (!secret) {
-      logger.error('HUBSPOT_WEBHOOK_SECRET not configured');
+      logger.error('HUBSPOT_CLIENT_SECRET not configured');
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
