@@ -11,6 +11,12 @@ const processWebhookEvent = async (event) => {
       case 'contact.propertyChange':
         await handleContactPropertyChange(event);
         break;
+      case 'contact.deletion':
+        await handleContactDeletion(event);
+        break;
+      case 'contact.privacyDeletion':
+        await handleContactPrivacyDeletion(event);
+        break;
       case 'deal.creation':
         await handleDealCreation(event);
         break;
@@ -52,6 +58,25 @@ const handleDealPropertyChange = async (event) => {
     value: event.propertyValue
   });
   // Add your business logic here
+};
+
+const handleContactDeletion = async (event) => {
+  logger.info('Processing contact deletion:', {
+    contactId: event.objectId,
+    portalId: event.portalId
+  });
+  // TODO: Remove contact data from your system
+  // This is a standard deletion (user deleted the contact)
+};
+
+const handleContactPrivacyDeletion = async (event) => {
+  logger.warn('Processing contact PRIVACY deletion (GDPR/Legal):', {
+    contactId: event.objectId,
+    portalId: event.portalId
+  });
+  // TODO: IMPORTANT - Remove ALL contact data from your system
+  // This is a legal/privacy deletion request (GDPR, etc.)
+  // You MUST delete all data related to this contact
 };
 
 module.exports = { processWebhookEvent };
