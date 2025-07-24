@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  webhook-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - LOG_LEVEL=debug
+      - HUBSPOT_WEBHOOK_SECRET=${HUBSPOT_WEBHOOK_SECRET}
+    volumes:
+      - ./src:/app/src
+      - ./node_modules:/app/node_modules
+    command: npm run dev
+
+  # Local testing with ngrok
+  ngrok:
+    image: ngrok/ngrok:latest
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command: http webhook-server:8080
+    ports:
+      - "4040:4040"
+    depends_on:
+      - webhook-server
