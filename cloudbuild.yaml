@@ -1,37 +1,61 @@
+# Cloud Build configuration for lucitra-webhook-server
+timeout: 1200s
+
 steps:
-  # Build the container image
+  # Build the Docker image with multiple tags
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/lucitra-webhook-server:$COMMIT_SHA', '.']
-  
-  # Push the container image to Container Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/lucitra-webhook-server:$COMMIT_SHA']
-  
-  # Deploy container image to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
     args:
-      - 'run'
-      - 'deploy'
-      - 'lucitra-webhook-server'
-      - '--image'
-      - 'gcr.io/$PROJECT_ID/lucitra-webhook-server:$COMMIT_SHA'
-      - '--region'
-      - 'us-central1'
-      - '--platform'
-      - 'managed'
-      - '--allow-unauthenticated'
-      - '--port'
-      - '8080'
-      - '--memory'
-      - '512Mi'
-      - '--max-instances'
-      - '100'
-      - '--set-env-vars'
-      - 'NODE_ENV=production'
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/lucitra-webhook-server:$BRANCH_NAME'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/lucitra-webhook-server:$SHORT_SHA'
+      - '.'
 
-# Store images in Google Container Registry
+  # Push all tags
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'gcr.io/$PROJECT_ID/lucitra-webhook-server'
+
+  # Deploy to Cloud Run based on branch
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        # Determine environment based on branch
+        if [[ "$BRANCH_NAME" == "main" ]]; then
+          ENV_SUFFIX="prod"
+        elif [[ "$BRANCH_NAME" == "staging" ]]; then
+          ENV_SUFFIX="staging"
+        elif [[ "$BRANCH_NAME" == "develop" ]]; then
+          ENV_SUFFIX="dev"
+        else
+          echo "Branch $BRANCH_NAME not configured for deployment"
+          exit 0
+        fi
+        
+        echo "Deploying to environment: $$ENV_SUFFIX"
+        
+        # Deploy the service
+        gcloud run deploy lucitra-webhook-server-$$ENV_SUFFIX \
+          --image gcr.io/$PROJECT_ID/lucitra-webhook-server:$BRANCH_NAME \
+          --region us-central1 \
+          --platform managed \
+          --allow-unauthenticated \
+          --port 8080 \
+          --set-env-vars="NODE_ENV=$$ENV_SUFFIX" \
+          --set-secrets="HUBSPOT_CLIENT_SECRET=hubspot-client-secret-$$ENV_SUFFIX:latest" \
+          --max-instances=10 \
+          --memory=512Mi \
+          --timeout=300
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+# Store build artifacts
 images:
-  - 'gcr.io/$PROJECT_ID/lucitra-webhook-server:$COMMIT_SHA'
-
-timeout: '1200s'
+  - 'gcr.io/$PROJECT_ID/lucitra-webhook-server:$BRANCH_NAME'
+  - 'gcr.io/$PROJECT_ID/lucitra-webhook-server:$SHORT_SHA'
