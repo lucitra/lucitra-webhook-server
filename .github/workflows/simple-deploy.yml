@@ -48,13 +48,21 @@ jobs:
     
     - name: Build and Push Docker Image
       run: |
-        gcloud builds submit --tag gcr.io/lucitra-ai/lucitra-webhook-server:${{ github.sha }}
-        gcloud builds submit --tag gcr.io/lucitra-ai/lucitra-webhook-server:${{ steps.env.outputs.image_tag }}
+        # Build locally and push to Artifact Registry
+        docker build -t us-central1-docker.pkg.dev/lucitra-ai/webhook-server/lucitra-webhook-server:${{ github.sha }} .
+        docker build -t us-central1-docker.pkg.dev/lucitra-ai/webhook-server/lucitra-webhook-server:${{ steps.env.outputs.image_tag }} .
+        
+        # Configure docker auth
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+        
+        # Push images
+        docker push us-central1-docker.pkg.dev/lucitra-ai/webhook-server/lucitra-webhook-server:${{ github.sha }}
+        docker push us-central1-docker.pkg.dev/lucitra-ai/webhook-server/lucitra-webhook-server:${{ steps.env.outputs.image_tag }}
     
     - name: Deploy to Cloud Run
       run: |
         gcloud run deploy lucitra-webhook-server-${{ steps.env.outputs.environment }} \
-          --image gcr.io/lucitra-ai/lucitra-webhook-server:${{ github.sha }} \
+          --image us-central1-docker.pkg.dev/lucitra-ai/webhook-server/lucitra-webhook-server:${{ github.sha }} \
           --region us-central1 \
           --platform managed \
           --allow-unauthenticated \
