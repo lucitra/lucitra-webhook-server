@@ -2,6 +2,8 @@
 
 A webhook server for processing HubSpot events with multi-environment deployment pipeline.
 
+[![Deploy Status](https://github.com/lucitra/lucitra-webhook-server/actions/workflows/terraform.yml/badge.svg)](https://github.com/lucitra/lucitra-webhook-server/actions)
+
 ## 🚀 Deployment Pipeline
 
 ```
