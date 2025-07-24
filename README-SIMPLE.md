@@ -55,3 +55,4 @@ git push origin main
 Check GitHub Actions output after each deployment for the URL.
 
 No PRs required, no approvals needed. Just push and deploy!# Trigger deployment
+
