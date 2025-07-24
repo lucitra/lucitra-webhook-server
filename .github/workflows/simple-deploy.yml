@@ -59,7 +59,7 @@ jobs:
           --platform managed \
           --allow-unauthenticated \
           --port 8080 \
-          --set-env-vars NODE_ENV=${{ steps.env.outputs.environment }}
+          --set-env-vars NODE_ENV=${{ steps.env.outputs.environment }},HUBSPOT_WEBHOOK_SECRET=${{ secrets.HUBSPOT_WEBHOOK_SECRET }}
     
     - name: Get Service URL
       run: |
