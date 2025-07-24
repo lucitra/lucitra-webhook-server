@@ -1,0 +1,44 @@
+# Label configuration for PR auto-labeling
+
+# Source code changes
+backend:
+  - src/**/*
+  - '*.js'
+
+# Test changes
+tests:
+  - tests/**/*
+  - '**/*.test.js'
+  - '**/*.spec.js'
+
+# Documentation
+documentation:
+  - '**/*.md'
+  - docs/**/*
+
+# Infrastructure changes
+infrastructure:
+  - terraform/**/*
+  - Dockerfile
+  - docker-compose.yml
+  - .dockerignore
+
+# CI/CD changes
+ci/cd:
+  - .github/**/*
+  - scripts/**/*
+  - cloudbuild.yaml
+
+# Configuration changes
+config:
+  - config/**/*
+  - '**/*.json'
+  - '**/*.yaml'
+  - '**/*.yml'
+  - .env*
+
+# Dependencies
+dependencies:
+  - package.json
+  - package-lock.json
+  - yarn.lock

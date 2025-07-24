@@ -1,0 +1,72 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-pr:
+    name: Validate PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR title
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+
+      - name: Check branch naming
+        run: |
+          branch_name="${{ github.head_ref }}"
+          # Check if branch name follows pattern: type/description
+          if ! echo "$branch_name" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|hotfix)/[a-z0-9-]+$'; then
+            echo "❌ Branch name doesn't follow the convention: type/description"
+            echo "   Example: feat/add-webhook-validation"
+            exit 1
+          fi
+          echo "✅ Branch name is valid: $branch_name"
+
+      - name: Check commit messages
+        run: |
+          # Get all commits in this PR
+          commits=$(git log --format="%s" origin/${{ github.base_ref }}..HEAD)
+          
+          # Check each commit message
+          while IFS= read -r commit; do
+            if ! echo "$commit" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+$'; then
+              echo "❌ Invalid commit message: $commit"
+              echo "   Please use conventional commits: https://www.conventionalcommits.org/"
+              exit 1
+            fi
+          done <<< "$commits"
+          
+          echo "✅ All commit messages follow conventional commits"
+
+  label-pr:
+    name: Auto Label PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Label PR based on files changed
+        uses: actions/labeler@v4
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
