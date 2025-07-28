@@ -14,9 +14,9 @@
   "author": "Lucitra AI",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^5.1.0",
     "cors": "^2.8.5",
-    "body-parser": "^1.20.2",
+    "body-parser": "^2.2.0",
     "winston": "^3.11.0",
     "@google-cloud/logging-winston": "^6.0.0"
   },
